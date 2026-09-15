@@ -3,7 +3,7 @@ services:
     name: physical-ai-search-mobile
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py
+    startCommand: python3 main.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.11
