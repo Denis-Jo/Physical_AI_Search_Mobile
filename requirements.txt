@@ -1,0 +1,7 @@
+fastapi>=0.100.0
+uvicorn>=0.22.0
+arxiv>=2.0.0
+requests>=2.31.0
+deep-translator>=1.11.0
+feedparser>=6.0.10
+pydantic>=2.0.0

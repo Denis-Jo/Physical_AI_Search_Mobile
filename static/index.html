@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Physical AI">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/isometric/512/bot.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <title>Physical AI Search Mobile</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <span class="logo-text">Physical AI</span>
+            </div>
+            <button id="toggle-filter-btn" class="icon-btn" aria-label="필터 설정">⚙️</button>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-box-container">
+            <form id="search-form" onsubmit="event.preventDefault(); handleSearch();">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="검색어 (예: 휴머노이드, 로봇)..." value="Humanoid Robot" autocomplete="off">
+                    <button type="submit" id="search-submit-btn" class="search-btn">검색</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Filter Options Accordion -->
+        <div id="filter-drawer" class="filter-drawer hidden">
+            <div class="filter-group">
+                <label for="paper-sort">📄 논문 정렬</label>
+                <select id="paper-sort">
+                    <option value="연관성순" selected>연관성순</option>
+                    <option value="최신순">최신순</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="news-period">📰 뉴스 기간</label>
+                <select id="news-period">
+                    <option value="전체" selected>전체</option>
+                    <option value="최근 1주일">최근 1주일</option>
+                    <option value="최근 1개월">최근 1개월</option>
+                    <option value="최근 1년">최근 1년</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="youtube-sort">🎥 유튜브 정렬</label>
+                <select id="youtube-sort">
+                    <option value="관련성순" selected>관련성순</option>
+                    <option value="최신순">최신순</option>
+                </select>
+            </div>
+            <div class="filter-group checkbox-group">
+                <label for="auto-translate" class="switch-label">
+                    <span>🌐 한국어로 번역</span>
+                    <input type="checkbox" id="auto-translate">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Scrollable Area -->
+    <main class="app-main">
+        <!-- Loading Spinner -->
+        <div id="loading-state" class="loading-state hidden">
+            <div class="spinner"></div>
+            <p id="loading-text">최신 수집 데이터를 불러오는 중...</p>
+        </div>
+
+        <!-- Tab Content Areas -->
+        <section id="tab-papers" class="tab-content active">
+            <div id="papers-list" class="cards-list">
+                <div class="empty-state">
+                    <span class="empty-icon">📄</span>
+                    <p>검색어를 입력하고 검색 버튼을 누르세요.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-news" class="tab-content hidden">
+            <div id="news-list" class="cards-list">
+                <div class="empty-state">
+                    <span class="empty-icon">📰</span>
+                    <p>뉴스 결과가 표시됩니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-youtube" class="tab-content hidden">
+            <div id="youtube-list" class="youtube-grid">
+                <div class="empty-state">
+                    <span class="empty-icon">🎥</span>
+                    <p>유튜브 결과가 표시됩니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-history" class="tab-content hidden">
+            <div id="history-container" class="history-container">
+                <div class="empty-state">
+                    <span class="empty-icon">📅</span>
+                    <p>저장된 내역이 없습니다.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Tab Navigation Bar (iOS Style) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="tab-papers">
+            <span class="nav-icon">📄</span>
+            <span class="nav-label">논문</span>
+            <span id="badge-papers" class="badge">0</span>
+        </button>
+        <button class="nav-item" data-tab="tab-news">
+            <span class="nav-icon">📰</span>
+            <span class="nav-label">뉴스</span>
+            <span id="badge-news" class="badge">0</span>
+        </button>
+        <button class="nav-item" data-tab="tab-youtube">
+            <span class="nav-icon">🎥</span>
+            <span class="nav-label">유튜브</span>
+            <span id="badge-youtube" class="badge">0</span>
+        </button>
+        <button class="nav-item" data-tab="tab-history">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">기록</span>
+        </button>
+    </nav>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JS -->
+    <script src="/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
+
